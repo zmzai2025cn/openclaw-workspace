@@ -1,0 +1,73 @@
+{
+  "date": "2026-02-20",
+  "generatedAt": "2026-02-19T16:00:00.000Z",
+  "sessions": [
+    {
+      "key": "agent:main:cron:bce26bca-e850-424f-86bc-d505aba07cbf",
+      "kind": "other",
+      "channel": "unknown",
+      "displayName": "Cron: daily-token-usage",
+      "sessionId": "9a1b6fc5-cde9-47f9-9f38-62fff2a484e2",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 0,
+      "latestOutputTokens": 0,
+      "contextTokens": 262144,
+      "contextUsed": "0%",
+      "totalAccumulatedTokens": 0,
+      "compactions": 0,
+      "lastActivity": "2026-02-20T00:00:00.024Z"
+    },
+    {
+      "key": "agent:main:main",
+      "kind": "other",
+      "channel": "feishu",
+      "displayName": "用户000230",
+      "sessionId": "770bc649-fa17-4b42-b844-743ca6e5e7b8",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 591,
+      "latestOutputTokens": 156,
+      "contextTokens": 262144,
+      "contextUsed": "82%",
+      "totalAccumulatedTokens": 215119,
+      "compactions": 2,
+      "lastActivity": "2026-02-19T15:53:41.579Z"
+    },
+    {
+      "key": "agent:main:feishu:group:oc_bddf7db914cca258d4b0801b1366514c",
+      "kind": "group",
+      "channel": "feishu",
+      "displayName": "feishu:g-oc_bddf7db914cca258d4b0801b1366514c",
+      "sessionId": "6f4e7511-d931-4343-9a79-15ffdcd3fa11",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 379,
+      "latestOutputTokens": 59,
+      "contextTokens": 262144,
+      "contextUsed": "62%",
+      "totalAccumulatedTokens": 162171,
+      "compactions": 0,
+      "lastActivity": "2026-02-19T08:02:28.977Z"
+    },
+    {
+      "key": "agent:main:feishu:group:oc_bddf7db914cca258d4b1366514c",
+      "kind": "group",
+      "channel": "feishu",
+      "displayName": "feishu:g-oc_bddf7db914cca258d4b1366514c",
+      "sessionId": "a72ac10c-48cb-4a21-bee9-65fb51bfc47a",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 0,
+      "latestOutputTokens": 0,
+      "contextTokens": 262144,
+      "contextUsed": "0%",
+      "totalAccumulatedTokens": 0,
+      "compactions": 0,
+      "lastActivity": "2026-02-19T06:26:55.699Z"
+    }
+  ],
+  "summary": {
+    "totalSessions": 4,
+    "latestInputTokens": 970,
+    "latestOutputTokens": 215,
+    "totalAccumulatedTokens": 377290,
+    "avgContextUsage": "36%"
+  }
+}

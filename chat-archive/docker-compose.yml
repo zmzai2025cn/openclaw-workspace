@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  chat-archive:
+    build: .
+    container_name: chat-archive
+    restart: unless-stopped
+    
+    ports:
+      - "8080:8080"
+    
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+    
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/data/chat.db
+      - LOG_LEVEL=info
+      - BACKUP_ENABLED=true
+      - BACKUP_INTERVAL_HOURS=24
+      - CLEANUP_ENABLED=true
+      - RETENTION_DAYS=90
+      - HEALTH_PORT=8080
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"

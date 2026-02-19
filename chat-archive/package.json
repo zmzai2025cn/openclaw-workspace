@@ -1,0 +1,22 @@
+{
+  "name": "chat-archive",
+  "version": "1.0.0",
+  "description": "Chat message archive with DuckDB",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "docker:build": "docker build -t chat-archive .",
+    "docker:run": "docker-compose up -d"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "duckdb": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "date": "2026-02-19",
+  "generatedAt": "2026-02-19T00:00:00+08:00",
+  "sessions": [
+    {
+      "key": "agent:main:cron:bce26bca-e850-424f-86bc-d505aba07cbf",
+      "kind": "other",
+      "channel": "unknown",
+      "displayName": "Cron: daily-token-usage",
+      "sessionId": "12c81d05-9508-4666-a109-53e662de8668",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 0,
+      "latestOutputTokens": 0,
+      "contextTokens": 262144,
+      "contextUsed": "0%",
+      "totalAccumulatedTokens": 0,
+      "compactions": 0,
+      "lastActivity": "2026-02-19T00:00:00+08:00"
+    },
+    {
+      "key": "agent:main:main",
+      "kind": "other",
+      "channel": "feishu",
+      "displayName": "user:ou_33ad704a28de3e1de2a3171f7cf1c4f0",
+      "sessionId": "3d22c54b-6ed1-4109-808c-044c1bbf98fd",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 87000,
+      "latestOutputTokens": 8,
+      "contextTokens": 262144,
+      "contextUsed": "38%",
+      "totalAccumulatedTokens": 99477,
+      "compactions": 0,
+      "lastActivity": "2026-02-18T23:40:41+08:00"
+    },
+    {
+      "key": "agent:main:feishu:group:oc_bddf7db914cca258d4b0801b1366514c",
+      "kind": "group",
+      "channel": "feishu",
+      "displayName": "feishu:g-oc_bddf7db914cca258d4b0801b1366514c",
+      "sessionId": "22fd8d1b-8965-4ac1-be9b-41ddd07a3805",
+      "model": "kimi-coding/k2p5",
+      "latestInputTokens": 1200,
+      "latestOutputTokens": 9,
+      "contextTokens": 262144,
+      "contextUsed": "5%",
+      "totalAccumulatedTokens": 13737,
+      "compactions": 0,
+      "lastActivity": "2026-02-18T14:20:49+08:00"
+    }
+  ],
+  "summary": {
+    "totalSessions": 3,
+    "latestInputTokens": 88200,
+    "latestOutputTokens": 17,
+    "totalAccumulatedTokens": 113214,
+    "avgContextUsage": "14.3%"
+  }
+}

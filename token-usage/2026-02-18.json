@@ -1,0 +1,44 @@
+{
+  "date": "2026-02-18",
+  "generatedAt": "2026-02-18T14:35:15+08:00",
+  "sessions": [
+    {
+      "key": "agent:main:main",
+      "kind": "other",
+      "channel": "feishu",
+      "displayName": "用户000230",
+      "sessionId": "3d22c54b-6ed1-4109-808c-044c1bbf98fd",
+      "model": "k2p5",
+      "latestInputTokens": 929,
+      "latestOutputTokens": 398,
+      "contextTokens": 262144,
+      "contextUsed": "79k/262k (30%)",
+      "totalAccumulatedTokens": 79484,
+      "compactions": 0,
+      "lastActivity": "2026-02-18T14:32:30+08:00"
+    },
+    {
+      "key": "agent:main:feishu:group:oc_bddf7db914cca258d4b0801b1366514c",
+      "kind": "group",
+      "channel": "feishu",
+      "displayName": "feishu:g-oc_bddf7db914cca258d4b0801b1366514c",
+      "sessionId": "22fd8d1b-8965-4ac1-be9b-41ddd07a3805",
+      "model": "k2p5",
+      "latestInputTokens": 496,
+      "latestOutputTokens": 11,
+      "contextTokens": 262144,
+      "contextUsed": "14k/262k (5%)",
+      "totalAccumulatedTokens": 13552,
+      "compactions": 0,
+      "lastActivity": "2026-02-18T14:14:48+08:00"
+    }
+  ],
+  "summary": {
+    "totalSessions": 2,
+    "latestInputTokens": 1425,
+    "latestOutputTokens": 409,
+    "totalAccumulatedTokens": 93036,
+    "avgContextUsage": "17.5%"
+  },
+  "note": "latestInputTokens/latestOutputTokens = 最近一次API调用的token数; totalAccumulatedTokens = 会话创建至今的累计token总量（包含历史所有调用）"
+}
