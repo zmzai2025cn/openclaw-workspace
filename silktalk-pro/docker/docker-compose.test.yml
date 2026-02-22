@@ -1,0 +1,299 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # 基础测试环境
+  # ============================================
+  test-base:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm test
+    networks:
+      - silktalk-test
+
+  # ============================================
+  # 单元测试
+  # ============================================
+  unit-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:unit
+    networks:
+      - silktalk-test
+
+  # ============================================
+  # 集成测试
+  # ============================================
+  integration-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:integration
+    networks:
+      - silktalk-test
+    depends_on:
+      - bootstrap-node
+
+  # ============================================
+  # E2E 测试
+  # ============================================
+  e2e-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:e2e
+    networks:
+      - silktalk-test
+    depends_on:
+      - bootstrap-node
+
+  # ============================================
+  # 环境测试
+  # ============================================
+  environment-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:environment
+    networks:
+      - silktalk-test
+    environment:
+      - TZ=UTC
+      - NODE_ENV=test
+
+  # ============================================
+  # 性能测试
+  # ============================================
+  performance-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: perf-test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+      - ./reports:/app/reports
+    working_dir: /app
+    command: npm run test:performance
+    networks:
+      - silktalk-test
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
+        reservations:
+          cpus: '2'
+          memory: 1G
+
+  # ============================================
+  # 混沌测试
+  # ============================================
+  chaos-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: chaos-test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:chaos
+    networks:
+      - silktalk-test
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    depends_on:
+      - bootstrap-node
+
+  # ============================================
+  # 模糊测试
+  # ============================================
+  fuzz-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:fuzzing
+    networks:
+      - silktalk-test
+
+  # ============================================
+  # 安全测试
+  # ============================================
+  security-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run test:security
+    networks:
+      - silktalk-test
+
+  # ============================================
+  # 引导节点 (用于测试)
+  # ============================================
+  bootstrap-node:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    ports:
+      - "4001:4001"
+      - "8080:8080"
+    networks:
+      - silktalk-test
+    environment:
+      - SILKTALK_LOG_LEVEL=info
+    command: >
+      node dist/cli/index.js start
+      --port 4001
+      --ws-port 8080
+      --dht
+      --relay
+
+  # ============================================
+  # 测试节点 1
+  # ============================================
+  test-node-1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    ports:
+      - "4002:4001"
+    networks:
+      - silktalk-test
+    environment:
+      - SILKTALK_LOG_LEVEL=debug
+    depends_on:
+      - bootstrap-node
+    command: >
+      node dist/cli/index.js start
+      --port 4001
+      --dht
+      --bootstrap /dns4/bootstrap-node/tcp/4001/p2p/12D3KooW...
+
+  # ============================================
+  # 测试节点 2 (NAT 模拟)
+  # ============================================
+  test-node-2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    networks:
+      - silktalk-test
+      - silktalk-nat
+    environment:
+      - SILKTALK_LOG_LEVEL=debug
+    depends_on:
+      - bootstrap-node
+    command: >
+      node dist/cli/index.js start
+      --port 4001
+      --relay
+
+  # ============================================
+  # 网络延迟注入器
+  # ============================================
+  latency-injector:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: chaos-test
+    networks:
+      - silktalk-test
+    cap_add:
+      - NET_ADMIN
+    command: >
+      sh -c "
+        tc qdisc add dev eth0 root netem delay 100ms 10ms distribution normal &&
+        tail -f /dev/null
+      "
+    depends_on:
+      - bootstrap-node
+
+  # ============================================
+  # 丢包模拟器
+  # ============================================
+  packet-loss:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: chaos-test
+    networks:
+      - silktalk-test
+    cap_add:
+      - NET_ADMIN
+    command: >
+      sh -c "
+        tc qdisc add dev eth0 root netem loss 10% &&
+        tail -f /dev/null
+      "
+
+  # ============================================
+  # 监控 (Prometheus + Grafana)
+  # ============================================
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - silktalk-test
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - silktalk-test
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+networks:
+  silktalk-test:
+    driver: bridge
+  silktalk-nat:
+    driver: bridge
+    internal: true

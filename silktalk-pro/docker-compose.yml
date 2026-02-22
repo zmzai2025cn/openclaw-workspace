@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  silktalk:
+    build: .
+    ports:
+      - "4001:4001"
+      - "8080:8080"
+    volumes:
+      - silktalk-data:/data
+    environment:
+      - SILKTALK_LOG_LEVEL=info
+      - SILKTALK_DATA_PATH=/data
+    command: >
+      start
+      --port 4001
+      --ws-port 8080
+      --dht
+      --relay
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "dist/cli/index.js", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  silktalk-data:

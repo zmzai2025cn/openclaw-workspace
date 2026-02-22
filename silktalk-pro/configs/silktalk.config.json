@@ -1,0 +1,74 @@
+{
+  "server": {
+    "name": "SilkTalk Pro Server",
+    "version": "1.0.0",
+    "environment": "auto",
+    "network": {
+      "type": "local",
+      "public_ip": "auto",
+      "bind_address": "0.0.0.0"
+    }
+  },
+  "http": {
+    "enabled": true,
+    "port": 3000,
+    "host": "0.0.0.0",
+    "cors": {
+      "enabled": true,
+      "origins": ["*"]
+    }
+  },
+  "websocket": {
+    "enabled": true,
+    "port": 3001,
+    "host": "0.0.0.0",
+    "path": "/ws"
+  },
+  "webrtc": {
+    "enabled": true,
+    "port": 3478,
+    "stun": {
+      "enabled": true,
+      "servers": [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302"
+      ]
+    },
+    "turn": {
+      "enabled": false,
+      "servers": []
+    }
+  },
+  "security": {
+    "jwt_secret": "55bcdb60f4f3cc3e8aa7a2efac6b3cb5efb2bf624c32f9c7a3cf01259f19611a",
+    "token_expiry": "24h",
+    "encryption": {
+      "enabled": true,
+      "algorithm": "aes-256-gcm"
+    }
+  },
+  "logging": {
+    "level": "info",
+    "file": "logs/app.log",
+    "max_size": "100m",
+    "max_files": 10,
+    "console": true
+  },
+  "features": {
+    "p2p": true,
+    "group_call": true,
+    "screen_share": true,
+    "file_transfer": true,
+    "recording": false
+  },
+  "limits": {
+    "max_connections": 1000,
+    "max_room_size": 50,
+    "max_file_size": "100mb",
+    "rate_limit": {
+      "enabled": true,
+      "window_ms": 60000,
+      "max_requests": 100
+    }
+  }
+}

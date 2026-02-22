@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # SilkTalk Pro 节点监控
+  - job_name: 'silktalk-nodes'
+    static_configs:
+      - targets: 
+        - 'bootstrap-node:4001'
+        - 'test-node-1:4001'
+        - 'test-node-2:4001'
+    metrics_path: /metrics
+    scrape_interval: 5s

@@ -1,0 +1,17 @@
+{
+  "name": "silktalk-pro-simple",
+  "version": "1.0.0",
+  "description": "SilkTalk Pro - 最小依赖版本 (仅WebSocket)",
+  "type": "module",
+  "scripts": {
+    "start": "node src/simple-server.js",
+    "dev": "node --watch src/simple-server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

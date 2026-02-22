@@ -1,0 +1,33 @@
+{
+  "server": {
+    "name": "SilkTalk Pro (Dev)",
+    "environment": "development"
+  },
+  "http": {
+    "enabled": true,
+    "port": 3000,
+    "cors": {
+      "enabled": true,
+      "origins": ["*"]
+    }
+  },
+  "websocket": {
+    "enabled": true,
+    "port": 3001
+  },
+  "webrtc": {
+    "enabled": true,
+    "port": 3478
+  },
+  "logging": {
+    "level": "debug",
+    "console": true
+  },
+  "features": {
+    "p2p": true,
+    "group_call": true,
+    "screen_share": true,
+    "file_transfer": true,
+    "recording": true
+  }
+}

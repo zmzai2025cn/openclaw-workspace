@@ -2,11 +2,11 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:**
-- **What to call them:**
+- **Name:** 张雅江
+- **What to call them:** 雅江
 - **Pronouns:** _(optional)_
-- **Timezone:**
-- **Notes:**
+- **Timezone:** Asia/Shanghai (GMT+8)
+- **Notes:** 构建员工数字孪生生产力系统
 
 ## Context
 

@@ -1,0 +1,2 @@
+语言包请从这里下载：
+https://digi.bib.uni-mannheim.de/tesseract/tessdata_fast/

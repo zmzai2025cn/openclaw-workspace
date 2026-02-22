@@ -1,0 +1,15 @@
+{
+  "name": "websocket-relay-server",
+  "version": "1.0.0",
+  "description": "WebSocket relay server for node-to-node messaging",
+  "main": "relay-server.js",
+  "scripts": {
+    "start": "node relay-server.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
