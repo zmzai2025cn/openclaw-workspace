@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawChat</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: #16213e;
+      padding: 15px 20px;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 { font-size: 20px; color: #e94560; }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e94560;
+      transition: background 0.3s;
+    }
+    .status-dot.connected { background: #00d9ff; }
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 200px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h3 {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .channel-list {
+      list-style: none;
+      flex: 1;
+    }
+    .channel-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      word-break: break-all;
+    }
+    .channel-item:hover { background: #0f3460; }
+    .channel-item.active {
+      background: #e94560;
+      color: white;
+    }
+    .member-count {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+    }
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .message {
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      background: #16213e;
+      border-radius: 12px;
+      max-width: 85%;
+      word-break: break-word;
+    }
+    .message.own {
+      background: #e94560;
+      margin-left: auto;
+    }
+    .message.system {
+      background: #0f3460;
+      text-align: center;
+      max-width: 100%;
+    }
+    .message-header {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .message.own .message-header { color: rgba(255,255,255,0.7); }
+    .message-content { font-size: 15px; line-height: 1.5; }
+    .input-area {
+      padding: 15px 20px;
+      background: #16213e;
+      border-top: 1px solid #0f3460;
+      display: flex;
+      gap: 10px;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #0f3460;
+      color: #eee;
+      font-size: 15px;
+    }
+    .input-area input:focus {
+      outline: 2px solid #e94560;
+    }
+    .input-area input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .input-area button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      background: #e94560;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .input-area button:hover:not(:disabled) { background: #ff6b6b; }
+    .input-area button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    .login-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .login-box {
+      background: #16213e;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #e94560;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #0f3460;
+      color: #eee;
+      font-size: 15px;
+    }
+    .login-box input:focus {
+      outline: 2px solid #e94560;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #e94560;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .login-box button:hover { background: #ff6b6b; }
+    .login-box button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    .error-text {
+      color: #e94560;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 600px) {
+      .sidebar { width: 150px; }
+      .message { max-width: 95%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录界面 -->
+  <div class="login-modal" id="loginModal">
+    <div class="login-box">
+      <h2>加入 ClawChat</h2>
+      <input type="text" id="serverUrl" placeholder="服务器地址 (如: wss://xxx.up.railway.app)" value="">
+      <input type="text" id="username" placeholder="你的昵称 (1-32字符)" value="">
+      <input type="text" id="channel" placeholder="频道名称" value="群聊1">
+      <button onclick="connect()" id="connectBtn">连接</button>
+      <div class="error-text" id="errorText"></div>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div class="header">
+    <h1>🚀 ClawChat</h1>
+    <div class="status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">未连接</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="sidebar">
+      <h3>频道</h3>
+      <ul class="channel-list" id="channelList">
+        <li class="channel-item active" id="currentChannel">
+          群聊1
+          <div class="member-count" id="memberCount"></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="chat-area">
+      <div class="messages" id="messages">
+        <div class="message system">
+          <div class="message-content">欢迎来到 ClawChat！请输入服务器地址和昵称连接。</div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input type="text" id="messageInput" placeholder="输入消息..." onkeypress="handleKeyPress(event)" disabled>
+        <button onclick="sendMessage()" id="sendBtn" disabled>发送</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ws = null;
+    let username = '';
+    let currentChannel = '群聊1';
+    let connected = false;
+    let reconnectAttempts = 0;
+    let heartbeatTimer = null;
+    const MAX_RECONNECT_ATTEMPTS = 10;
+
+    function connect() {
+      const serverUrl = document.getElementById('serverUrl').value.trim();
+      username = document.getElementById('username').value.trim();
+      currentChannel = document.getElementById('channel').value.trim() || '群聊1';
+      const errorText = document.getElementById('errorText');
+      const connectBtn = document.getElementById('connectBtn');
+
+      // 验证输入
+      if (!serverUrl) {
+        errorText.textContent = '请输入服务器地址';
+        return;
+      }
+      if (!username || username.length < 1 || username.length > 32) {
+        errorText.textContent = '昵称必须为1-32字符';
+        return;
+      }
+
+      errorText.textContent = '';
+      connectBtn.disabled = true;
+      connectBtn.textContent = '连接中...';
+
+      console.log('Connecting to:', serverUrl);
+
+      try {
+        ws = new WebSocket(serverUrl);
+
+        ws.onopen = () => {
+          console.log('Connected');
+          connected = true;
+          reconnectAttempts = 0;
+          updateStatus(true);
+          document.getElementById('loginModal').classList.add('hidden');
+          document.getElementById('currentChannel').textContent = currentChannel;
+          document.getElementById('messageInput').disabled = false;
+          document.getElementById('sendBtn').disabled = false;
+
+          // 注册
+          ws.send(JSON.stringify({
+            type: 'register',
+            id: username,
+            timestamp: Date.now()
+          }));
+
+          // 订阅频道
+          setTimeout(() => {
+            ws.send(JSON.stringify({
+              type: 'subscribe',
+              channel: currentChannel,
+              timestamp: Date.now()
+            }));
+          }, 500);
+
+          // 启动心跳
+          startHeartbeat();
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            handleMessage(msg);
+          } catch (err) {
+            console.error('Invalid message:', err);
+          }
+        };
+
+        ws.onclose = (event) => {
+          console.log('Disconnected:', event.code, event.reason);
+          connected = false;
+          updateStatus(false);
+          stopHeartbeat();
+          
+          // 尝试重连
+          if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts - 1), 30000);
+            addMessage('系统', `连接断开，${delay/1000}秒后重试...`, true);
+            setTimeout(connect, delay);
+          } else {
+            addMessage('系统', '重连失败，请刷新页面重试', true);
+          }
+        };
+
+        ws.onerror = (err) => {
+          console.error('WebSocket error:', err);
+          errorText.textContent = '连接错误，请检查服务器地址';
+          connectBtn.disabled = false;
+          connectBtn.textContent = '连接';
+        };
+
+      } catch (err) {
+        console.error('Connection error:', err);
+        errorText.textContent = '连接失败: ' + err.message;
+        connectBtn.disabled = false;
+        connectBtn.textContent = '连接';
+      }
+    }
+
+    function handleMessage(msg) {
+      switch (msg.type) {
+        case 'welcome':
+          console.log('Server ID:', msg.clientId);
+          break;
+
+        case 'registered':
+          addMessage('系统', `已注册为: ${msg.id}`, true);
+          break;
+
+        case 'subscribed':
+          addMessage('系统', `已加入频道: ${msg.channel}`, true);
+          updateMemberCount(msg.members);
+          break;
+
+        case 'message':
+          const isOwn = msg.from === username;
+          // XSS防护：对消息内容进行转义
+          let text;
+          if (typeof msg.payload === 'string') {
+            text = msg.payload;
+          } else if (msg.payload && typeof msg.payload === 'object') {
+            text = msg.payload.text || JSON.stringify(msg.payload);
+          } else {
+            text = String(msg.payload);
+          }
+          addMessage(msg.from, text, isOwn);
+          // 发送ACK
+          ws.send(JSON.stringify({
+            type: 'ack',
+            msgId: msg.msgId,
+            timestamp: Date.now()
+          }));
+          break;
+
+        case 'member_joined':
+          addMessage('系统', `${escapeHtml(msg.member)} 加入了频道`, true);
+          updateMemberCount(msg.members);
+          break;
+
+        case 'member_left':
+          addMessage('系统', `${escapeHtml(msg.member)} 离开了频道`, true);
+          updateMemberCount(msg.members);
+          break;
+
+        case 'ack':
+          // 消息已送达确认
+          break;
+
+        case 'error':
+          addMessage('错误', escapeHtml(msg.error), true);
+          break;
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+
+      if (!text || !connected || !ws) return;
+
+      ws.send(JSON.stringify({
+        type: 'publish',
+        channel: currentChannel,
+        payload: { text: text },
+        timestamp: Date.now()
+      }));
+
+      input.value = '';
+    }
+
+    function addMessage(from, content, isSystem = false) {
+      const messages = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'message' + (from === username ? ' own' : '') + (isSystem ? ' system' : '');
+
+      const time = new Date().toLocaleTimeString();
+      div.innerHTML = `
+        <div class="message-header">
+          <span>${escapeHtml(from)}</span>
+          <span>${time}</span>
+        </div>
+        <div class="message-content">${escapeHtml(content)}</div>
+      `;
+
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function updateStatus(isConnected) {
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+
+      if (isConnected) {
+        dot.classList.add('connected');
+        text.textContent = '已连接';
+      } else {
+        dot.classList.remove('connected');
+        text.textContent = '未连接';
+      }
+    }
+
+    function updateMemberCount(members) {
+      const count = members ? members.length : 0;
+      document.getElementById('memberCount').textContent = `${count} 人在线`;
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function startHeartbeat() {
+      stopHeartbeat();
+      heartbeatTimer = setInterval(() => {
+        if (connected && ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'ping', timestamp: Date.now() }));
+        }
+      }, 30000);
+    }
+
+    function stopHeartbeat() {
+      if (heartbeatTimer) {
+        clearInterval(heartbeatTimer);
+        heartbeatTimer = null;
+      }
+    }
+
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // 页面关闭时清理
+    window.onbeforeunload = () => {
+      if (ws) {
+        ws.close();
+      }
+    };
+  </script>
+</body>
+</html>

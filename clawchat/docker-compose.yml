@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  clawchat-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - HEARTBEAT_INTERVAL=30000
+      - HEARTBEAT_TIMEOUT=150000
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - clawchat-network
+
+  clawchat-client-1:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - SERVER_URL=ws://clawchat-server:8080
+      - CLIENT_ID=client-1
+    depends_on:
+      clawchat-server:
+        condition: service_healthy
+    networks:
+      - clawchat-network
+    profiles:
+      - test
+
+  clawchat-client-2:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - SERVER_URL=ws://clawchat-server:8080
+      - CLIENT_ID=client-2
+    depends_on:
+      clawchat-server:
+        condition: service_healthy
+    networks:
+      - clawchat-network
+    profiles:
+      - test
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - clawchat-network
+    profiles:
+      - scaling
+
+networks:
+  clawchat-network:
+    driver: bridge
+
+volumes:
+  redis-data:

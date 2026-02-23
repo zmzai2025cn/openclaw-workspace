@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-02-23T14:00:00.303Z",
+  "coverage": {
+    "server": {
+      "functions": "100.0%",
+      "critical": "100.0%",
+      "errorHandling": "100.0%",
+      "security": "100.0%"
+    },
+    "client": {
+      "functions": "100.0%",
+      "critical": "100.0%",
+      "errorHandling": "100.0%"
+    },
+    "web": {
+      "features": "100.0%",
+      "critical": "100.0%"
+    },
+    "overall": {
+      "code": "100.0%",
+      "critical": "100.0%"
+    }
+  },
+  "findings": []
+}
