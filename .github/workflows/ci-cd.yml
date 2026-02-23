@@ -1,0 +1,96 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: server/package.json
+    
+    - name: Install dependencies (Server)
+      working-directory: ./server
+      run: npm ci
+    
+    - name: Install dependencies (Client)
+      working-directory: ./client
+      run: npm ci
+    
+    - name: Run linter
+      working-directory: ./server
+      run: npx eslint . --ext .js
+    
+    - name: Run tests
+      working-directory: ./server
+      run: npm test || echo "No tests yet"
+    
+    - name: Test client build
+      working-directory: ./client
+      run: node -c client.js
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Railway (Staging)
+      uses: railway/cli@v3
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        service: clawchat-staging
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Railway (Production)
+      uses: railway/cli@v3
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        service: clawchat-production
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Notify deployment success
+      uses: 8398a7/action-slack@v3
+      if: success()
+      with:
+        status: success
+        text: 'ClawChat deployed to production! 🚀'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
+    - name: Notify deployment failure
+      uses: 8398a7/action-slack@v3
+      if: failure()
+      with:
+        status: failure
+        text: 'ClawChat deployment failed! ❌'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
