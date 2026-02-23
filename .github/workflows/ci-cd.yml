@@ -22,26 +22,26 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: server/package.json
+        cache-dependency-path: clawchat/server/package.json
     
     - name: Install dependencies (Server)
-      working-directory: ./server
+      working-directory: ./clawchat/server
       run: npm ci
     
     - name: Install dependencies (Client)
-      working-directory: ./client
+      working-directory: ./clawchat/client
       run: npm ci
     
     - name: Run linter
-      working-directory: ./server
+      working-directory: ./clawchat/server
       run: npx eslint . --ext .js
     
     - name: Run tests
-      working-directory: ./server
+      working-directory: ./clawchat/server
       run: npm test || echo "No tests yet"
     
     - name: Test client build
-      working-directory: ./client
+      working-directory: ./clawchat/client
       run: node -c client.js
 
   deploy-staging:
@@ -63,7 +63,7 @@ jobs:
   deploy-production:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     environment: production
     
     steps:
