@@ -50,7 +50,7 @@ export class HealthServer {
       }
     });
 
-    this.server.listen(this.port, () => {
+    this.server.listen(this.port, '0.0.0.0', () => {
       this.logger.info(`Health server started on port ${this.port}`);
     });
   }
@@ -72,7 +72,7 @@ export class HealthServer {
 
   /**
    * 就绪检查（就绪探针）
-   */
+    */
   private handleReady(req: http.IncomingMessage, res: http.ServerResponse): void {
     const status = this.getStatus();
     const ready = status.checks?.database && 
@@ -88,7 +88,7 @@ export class HealthServer {
 
   /**
    * 指标端点
-   */
+    */
   private handleMetrics(req: http.IncomingMessage, res: http.ServerResponse): void {
     const status = this.getStatus();
 
