@@ -48,7 +48,13 @@ export class BackupManager {
   /**
    * 执行备份
    */
-  async backup(): Promise<string> {
+  async backup(): Promise<string | null> {
+    // 检查数据库文件是否存在
+    if (!fs.existsSync(this.config.dbPath)) {
+      this.logger.info(`Database file not found, skipping backup: ${this.config.dbPath}`);
+      return null;
+    }
+    
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupFile = path.join(this.config.backupDir, `kimiclaw-${timestamp}.db`);
     
@@ -64,7 +70,8 @@ export class BackupManager {
       return backupFile;
     } catch (err) {
       this.logger.error('Backup failed', err as Error);
-      throw err;
+      // 不抛出错误，让服务继续运行
+      return null;
     }
   }
 
