@@ -50,7 +50,17 @@ async function main() {
   }, logger);
   backupManager.start();
   
-  // 7. 初始化健康检查
+  // 8. 初始化API服务（在3000端口启动，包含健康检查）
+  const apiServer = new KimiclawAPIServer(config.dbPath);
+  apiServer.setLogger(logger);
+  apiServer.setHealthStatusProvider(() => ({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  }));
+  apiServer.start(config.port, config.host);
+  logger.info(`Main API server started on ${config.host}:${config.port}`);
+  
+  // 9. 初始化健康检查（可选，在3001端口）
   const healthServer = new HealthServer(config.port + 1, logger, () => ({
     checks: {
       database: true, // TODO: 实际检查
@@ -64,10 +74,6 @@ async function main() {
     },
   }));
   healthServer.start();
-  
-  // 8. 初始化API服务
-  const apiServer = new KimiclawAPIServer(config.dbPath);
-  // TODO: 启动HTTP API服务
   
   // 9. 优雅关闭
   const shutdown = new GracefulShutdown(logger);
