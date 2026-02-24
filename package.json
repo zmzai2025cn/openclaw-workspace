@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/index.js",
     "test": "jest",
     "dev": "ts-node src/index.ts",
     "ci-check": "ts-node src/ci-checks.ts",
