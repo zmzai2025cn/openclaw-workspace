@@ -1,15 +1,27 @@
 {
-  "name": "websocket-relay-server",
+  "name": "kimiclaw-db",
   "version": "1.0.0",
-  "description": "WebSocket relay server for AI communication",
-  "main": "server.js",
+  "description": "Kimiclaw Database Module - DuckDB + Batch Buffer",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node server.js"
+    "build": "tsc",
+    "test": "jest",
+    "dev": "ts-node src/index.ts",
+    "ci-check": "ts-node src/ci-checks.ts",
+    "prepush": "npm run ci-check && npm run build && npm test"
   },
   "dependencies": {
-    "ws": "^8.14.2"
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.3.0",
+    "duckdb": "^1.4.4",
+    "jest": "^30.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
-  "engines": {
-    "node": ">=18.0.0"
+  "devDependencies": {
+    "ts-jest": "^29.4.6",
+    "eslint": "^8.57.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0"
   }
 }
